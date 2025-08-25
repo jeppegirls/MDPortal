@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jeppe Girls Matric Dance - MD Portal</title>
+
+  <style>
+    :root{
+      --brand-gold:#bfa34d;
+      --brand-gold-light:#e6d16b;
+      --gold-ink:#ffd700;
+      --ink:#333;
+      --bg-card:#ffffff;
+      --bg-soft:#fdf5e6;
+      --floor:#000;
+      --shadow:0 4px 20px rgba(0,0,0,.2);
+      --shadow-strong:0 8px 30px rgba(0,0,0,.35);
+      --radius:15px;
+      --radius-lg:20px;
+      --focus: 0 0 0 3px rgba(191,163,77,.35);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      background:
+      center / cover no-repeat fixed;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(6px);
+      border: 2px solid var(--brand-gold);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-strong);
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.55));
+      padding: 18px;
+    }
+
+    .header__brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    .header__logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.45));
+    }
+
+    .header__title {
+      font-family: "Garamond", "Times New Roman", serif;
+      font-size: clamp(20px, 3.2vw, 34px);
+      font-weight: 700;
+      letter-spacing: .3px;
+      margin: 0;
+      color: #f5f5f5;
+    }
+
+    .countdown {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin: 16px auto 20px auto;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      width: min(95%, 720px);
+    }
+
+
+    .countdown__text {
+      color: black;
+      font-weight: 800;
+      font-size: clamp(18px, 2.4vw, 30px);
+      line-height: 1.25;
+    }
+
+    .steps {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      background: #faf9f7;
+    }
+
+    .step {
+      display: none;
+      background: var(--bg-card);
+      border: 2px solid var(--brand-gold);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .step.active { display: block; }
+
+    .step h2 {
+      text-align: center;
+      color: var(--brand-gold);
+      font-family: "Garamond", serif;
+      font-size: clamp(18px, 2.5vw, 28px);
+      margin: 6px 0 12px 0;
+      text-shadow: 1px 1px 2px rgba(0,0,0,.15);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      width: min(760px, 95%);
+      margin: 0 auto;
+    }
+
+    .control {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+      border: 1px solid var(--brand-gold);
+      font-size: 16px;
+      padding: 12px 14px;
+      box-sizing: border-box;
+      outline: none;
+      transition: box-shadow .15s ease, transform .05s ease;
+      background: #fff;
+    }
+
+    .control:focus {
+      box-shadow: var(--focus);
+    }
+
+    .caption {
+      text-align: center;
+      color: #444;
+      font-style: italic;
+      margin: 6px 0 12px 0;
+    }
+
+    .buttons {
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    .btn {
+      background: var(--brand-gold);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform .08s ease, background .2s ease, box-shadow .2s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+    }
+
+    .btn:hover {
+      background: var(--brand-gold-light);
+      color: #000;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .floor {
+  position: relative;
+  width: 100%;
+  min-height: 100vh; /* take full screen height */
+  max-height: 90vh;  /* prevent it from overflowing the viewport too much */
+  overflow: auto;    /* enable scrolling if content is larger than viewport */
+  margin: 0 auto 16px auto;
+  background: var(--floor);
+  border: 2px solid var(--brand-gold);
+  border-radius: var(--radius);
+}
+
+    .table {
+      position: absolute;
+      background: #ffd700;
+      border-radius: 50%;
+      width: 84px;
+      height: 84px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-weight: bold;
+      color: #333;
+      transition: transform .15s ease, box-shadow .2s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      user-select: none;
+    }
+
+    .table:hover { transform: scale(1.06); }
+
+    .table.square {
+      border-radius: 12px;
+      width: 104px;
+      height: 104px;
+      background: var(--brand-gold);
+      color: #fff;
+    }
+
+    .table__label {
+      width: 100%;
+      text-align: center;
+      font-weight: 800;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .seat {
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border: 1px solid var(--brand-gold);
+      border-radius: 50%;
+      margin: 2px;
+      cursor: pointer;
+      transition: transform .05s ease, background .2s ease, box-shadow .15s ease, opacity .2s ease;
+    }
+
+    .seat:hover { transform: scale(1.06); }
+    .seat.selected {
+      background: var(--brand-gold);
+      box-shadow: inset 0 0 0 2px #fff;
+    }
+
+    .seat.booked {
+      background: #8c8c8c;
+      border-color: #777;
+      cursor: not-allowed;
+      opacity: .7;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    .dancefloor {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  font-size: 3vw;        /* scales text with screen width */
+  color: #222;
+  border: 2px solid var(--brand-gold);
+  border-radius: 1.5vw;  /* relative radius */
+  background: #eee8dc;
+  box-shadow: inset 0 0 12px rgba(0,0,0,.15);
+
+  /* Relative position + flexible size */
+  top: 10%;          /* distance from top of container */
+  left: 5%;          /* distance from left */
+  width: 90%;        /* occupies 90% of floor container width */
+  height: auto;
+  aspect-ratio: 5 / 2; /* keeps proportional height */
+}
+
+    }
+
+    #confirmation {
+      background: var(--bg-soft);
+      border: 1px solid var(--brand-gold);
+      padding: 18px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.55;
+      color: #222;
+      width: min(760px, 95%);
+      margin: 0 auto;
+    }
+
+    #contact {
+      text-align: center;
+      margin: 6px 0 22px 0;
+      font-size: 14px;
+      color: #222;
+      font-style: italic;
+    }
+
+    .slider {
+      width: min(1000px, 96%);
+      margin: 18px auto 24px auto;
+      overflow: hidden;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-strong);
+      border: 1px solid rgba(0,0,0,.08);
+      background: #000;
+    }
+
+    .slides {
+      display: flex;
+      width: 100%; 
+      animation: slide 35s ;
+    }
+
+    .slides img {
+      width: 100%;
+      object-fit: cover;
+      display: flex;
+      aspect-ratio: 15 / 9;
+    }
+
+    @keyframes slide {
+      0%   { transform: translateX(0%); }
+      18%  { transform: translateX(0%); }
+      20%  { transform: translateX(-100%); }
+      38%  { transform: translateX(-100%); }
+      40%  { transform: translateX(-200%); }
+      58%  { transform: translateX(-200%); }
+      60%  { transform: translateX(-300%); }
+      78%  { transform: translateX(-300%); }
+      80%  { transform: translateX(-400%); }
+      98%  { transform: translateX(-400%); }
+      100% { transform: translateX(0%); }
+    }
+
+    @media (max-width: 1024px) {
+      .floor { height: 640px; }
+    }
+
+    @media (max-width: 768px) {
+      .header__logo { width: 60px; height: 60px; }
+      .countdown__logo { width: 46px; height: 46px; }
+      .floor { height: 560px; }
+    }
+
+    @media (max-width: 560px) {
+      .header { padding: 14px; }
+      .countdown { padding: 12px 14px; }
+      .table { width: 76px; height: 76px; }
+      .table.square { width: 96px; height: 96px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app" role="application" aria-label="Matric Dance Portal">
+
+    <header class="header" role="banner">
+      <div class="header__brand" aria-label="Jeppe Girls Matric Dance">
+        <img
+          class="header__logo"
+          src="https://uploads.onecompiler.io/434dtae6m/43ubv7akb/download-removebg-preview.png"
+          alt="Jeppe Girls badge"
+          width="72" height="72"
+        />
+        <h1 class="header__title">Jeppe Girls Matric Dance Portal</h1>
+      </div>
+    </header>
+
+    <section id="countdown" class="countdown" role="status" aria-live="polite">
+      <div class="countdown__text">Loading countdown…</div>
+    </section>
+
+    <main class="steps" role="main">
+    <form id="mdForm" method="POST" action="https://script.google.com/macros/s/AKfycbwJM9vq2vzRSd6d0PhjCz6kmclw4zyJsl1RokLbo5Xw-XMpr2EhbwQZZivMpXMzDBYEAg/exec">
+     <input type="hidden" name="payload" id="payloadInput" />
+
+      <section class="step active" id="step0" aria-labelledby="s0-title">
+        <h2 id="s0-title">Welcome to the Matric Dance Portal</h2>
+        <p class="caption">Please enter your details to get started.</p>
+        <div class="controls">
+          <input class="control" type="text" id="firstName" placeholder="First Name" autocomplete="given-name" />
+          <input class="control" type="text" id="lastName" placeholder="Last Name" autocomplete="family-name" />
+          <select class="control" id="classSelect" aria-label="Select your class">
+            <option value="">Select your class</option>
+            <option value="12E">12 E</option>
+            <option value="12D">12 D</option>
+            <option value="12U">12 U</option>
+            <option value="12C">12 C</option>
+            <option value="12A">12 A</option>
+            <option value="12T">12 T</option>
+          </select>
+        </div>
+        <div class="buttons">
+          <button class="btn" type="button" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step" id="step1" aria-labelledby="s1-title">
+        <h2 id="s1-title">Step 1: Upload Proof of Payment</h2>
+        <div class="controls">
+          <input class="control" type="file" id="paymentProof" accept="image/*,application/pdf" />
+        </div>
+        <p class="caption">Theme: <strong>The Great Gatsby</strong> – dress to dazzle! 📸</p>
+        <div class="buttons">
+          <button class="btn" type="button" onclick="prevStep()">Back</button>
+          <button class="btn" type="button" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step" id="step2" aria-labelledby="s2-title">
+        <h2 id="s2-title">Step 2: Choose Your Table & Seats</h2>
+        <div id="floorPlan" class="floor" aria-label="Venue floor plan"></div>
+        <p class="caption">Click a table to select it, then pick your seat(s). Max 2 seats per booking. 🎉</p>
+        <div class="buttons">
+          <button class="btn" type="button" onclick="prevStep()">Back</button>
+          <button class="btn" type="button" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step" id="step3" aria-labelledby="s3-title">
+        <h2 id="s3-title">Step 3: Dietary Requirements</h2>
+        <div class="controls">
+          <textarea class="control" id="dietary" rows="4" placeholder="Enter any dietary requirements (e.g., vegetarian, halal, allergies)…"></textarea>
+        </div>
+        <p class="caption">We’ll do our best to accommodate you. 🍽️</p>
+        <div class="buttons">
+          <button class="btn" type="button" onclick="prevStep()">Back</button>
+          <button class="btn" type="button" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step" id="step4" aria-labelledby="s4-title">
+        <h2 id="s4-title">Step 4: Music Choices</h2>
+        <div class="controls">
+          <textarea class="control" id="music" rows="4" placeholder="Enter your table’s music choices (songs/artists)…"></textarea>
+        </div>
+        <p class="caption">Let’s make your night unforgettable! 🎶</p>
+        <div class="buttons">
+          <button class="btn" type="button" onclick="prevStep()">Back</button>
+          <button class="btn" type="button" onclick="nextStep()">Next</button>
+        </div>
+      </section>
+
+      <section class="step" id="step5" aria-labelledby="s5-title">
+        <h2 id="s5-title">Step 5: Confirm Your Details</h2>
+        <div id="confirmation" aria-live="polite"></div>
+        <div class="buttons">
+          <button class="btn" type="button" onclick="prevStep()">Back</button>
+          <button class="btn" type="submit">Submit</button>
+
+        </div>
+      </section>
+
+     <section class="step" id="step6" aria-labelledby="s6-title">
+       <h2 id="s6-title">Thank You!</h2>
+       <p class="caption">
+         Your submission has been received. No edits can be made.<br>
+          We can’t wait to see you at the Matric Dance! 🎉
+       </p>
+      </section>
+     </form>
+    </main>
+
+    <p id="contact">For assistance, contact us at <strong>mjarvis@jeppegirls.co.za</strong></p>
+
+     <section class="slider" aria-label="Matric dance gallery">
+      <div class="slides">
+        <img src="https://uploads.onecompiler.io/434dtae6m/43ubv7akb/Screenshot%20(441).png" alt="Dance Photo 1" />
+        <img src="https://uploads.onecompiler.io/434dtae6m/43ubv7akb/Screenshot%20(440).png" alt="Dance Photo 2" />
+        <img src="https://uploads.onecompiler.io/434dtae6m/43ubv7akb/Screenshot%20(442).png" alt="Dance Photo 3" />
+        <img src="https://uploads.onecompiler.io/434dtae6m/43ubv7akb/Matric-Dance-FS-Rebecca-Mortley.jpg" alt="Dance Photo 4" />
+        <img src="https://uploads.onecompiler.io/434dtae6m/43ubv7akb/GG06892rc_a_l.webp" alt="Dance Photo 5"/>
+      </div>
+    </section>
+  </div>
+
+ <script>
+(function initCountdown() {
+  const el = document.getElementById('countdown');
+  const textEl = el.querySelector('.countdown__text');
+  const eventDate = new Date('2025-09-27T19:00:00+02:00').getTime();
+
+  function renderTick(ms) {
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+    return `Matric Dance in: ${days}d ${hours}h ${minutes}m ${seconds}s ⏰`;
+  }
+
+  function renderStarted() {
+    textEl.textContent = '🎉 The Matric Dance has started! 🎉';
+  }
+
+  function tick() {
+    const now = Date.now();
+    const distance = eventDate - now;
+    if (distance < 0) {
+      renderStarted();
+      clearInterval(timer);
+      return;
+    }
+    textEl.textContent = renderTick(distance);
+  }
+
+  const timer = setInterval(tick, 1000);
+  tick();
+})();
+
+let currentStep = 0;
+const totalSteps = 6;
+let selectedTable = null;
+
+function showStep(index) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const step = document.getElementById(`step${index}`);
+  if (step) step.classList.add('active');
+  currentStep = index;
+}
+
+function nextStep() {
+  if (currentStep === 0) {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const studentClass = document.getElementById('classSelect').value;
+    if (!firstName || !lastName || !studentClass) {
+      alert('Please fill in your name, surname, and class.');
+      return;
+    }
+  }
+
+  if (currentStep === 2) {
+    if (!selectedTable) {
+      alert('Please select a table before continuing.');
+      return;
+    }
+    const tableDiv = [...document.querySelectorAll('.table')].find(t => t.dataset.id == selectedTable);
+    const seatsSelected = tableDiv ? tableDiv.querySelectorAll('.seat.selected').length : 0;
+    if (seatsSelected < 1) {
+      alert('Please select at least 1 seat for your table.');
+      return;
+    }
+    showConfirmation();
+  }
+
+  const next = Math.min(currentStep + 1, totalSteps);
+  showStep(next);
+}
+
+function prevStep() {
+  const prev = Math.max(currentStep - 1, 0);
+  showStep(prev);
+}
+
+window.nextStep = nextStep;
+window.prevStep = prevStep;
+
+const STORAGE_KEY = 'mdBookedSeats';
+const bookedSet = (() => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch (e) {
+    return new Set();
+  }
+})();
+
+function saveBookedSet(set) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(set)));
+  } catch (e) {}
+}
+
+const tableData = [
+  {id:1,type:'square',seats:12,top:50,left:50},
+  {id:'danceFloor',type:'rectangle',label:'DANCE FLOOR',top:50,left:220,width:520,height:210},
+  {id:23,type:'square',seats:12,top:50,left:780},
+  {id:2,type:'round',seats:10,top:200,left:50},
+  {id:22,type:'round',seats:10,top:200,left:780},
+  {id:3,type:'square',seats:12,top:350,left:50},
+  {id:4,type:'round',seats:10,top:300,left:170},
+  {id:5,type:'square',seats:12,top:300,left:260},
+  {id:19,type:'square',seats:12,top:300,left:400},
+  {id:12,type:'round',seats:10,top:300,left:560},
+  {id:20,type:'round',seats:10,top:300,left:670},
+  {id:21,type:'square',seats:12,top:350,left:780},
+  {id:7,type:'square',seats:12,top:500,left:50},
+  {id:6,type:'round',seats:10,top:470,left:170},
+  {id:9,type:'round',seats:10,top:500,left:260},
+  {id:11,type:'square',seats:12,top:450,left:360},
+  {id:13,type:'square',seats:12,top:450,left:510},
+  {id:15,type:'round',seats:10,top:450,left:650},
+  {id:18,type:'round',seats:10,top:450,left:650},
+  {id:17,type:'square',seats:12,top:500,left:780},
+  {id:8,type:'round',seats:10,top:650,left:50},
+  {id:10,type:'square',seats:12,top:650,left:320},
+  {id:14,type:'round',seats:10,top:650,left:560},
+  {id:16,type:'square',seats:12,top:650,left:720}
+];
+
+const floor = document.getElementById('floorPlan');
+
+function seatKey(tableId, seatNumber) {
+  return `${tableId}-${seatNumber}`;
+}
+
+function buildFloor() {
+  floor.innerHTML = '';
+  tableData.forEach(t => {
+    if (t.type === 'rectangle') {
+      const dance = document.createElement('div');
+      dance.className = 'dancefloor';
+      dance.style.top = t.top + 'px';
+      dance.style.left = t.left + 'px';
+      dance.style.width = t.width + 'px';
+      dance.style.height = t.height + 'px';
+      dance.textContent = t.label || 'DANCE FLOOR';
+      floor.appendChild(dance);
+      return;
+    }
+
+    const table = document.createElement('div');
+    table.classList.add('table');
+    if(t.type==='square') table.classList.add('square');
+    table.style.top = t.top + 'px';
+    table.style.left = t.left + 'px';
+    table.dataset.id = t.id;
+
+    const label = document.createElement('div');
+    label.className = 'table__label';
+    label.textContent = t.label || t.id;
+    table.appendChild(label);
+
+    if(t.seats){
+      for(let i=0;i<t.seats;i++){
+        const seatNo = String(i+1);
+        const seat = document.createElement('div');
+        seat.className = 'seat';
+        seat.dataset.seatNumber = seatNo;
+        seat.title = `Seat ${seatNo}`;
+        if(bookedSet.has(seatKey(t.id,seatNo))) seat.classList.add('booked');
+        else seat.addEventListener('click', e=>{
+          e.stopPropagation();
+          const selectedSeats = table.querySelectorAll('.seat.selected');
+          if(!seat.classList.contains('selected') && selectedSeats.length>=2){
+            alert('You can select a minimum of 1 and maximum of 2 seats per table.');
+            return;
+          }
+          seat.classList.toggle('selected');
+        });
+        table.appendChild(seat);
+      }
+    }
+
+    table.addEventListener('click', () => {
+      selectedTable = t.id;
+      document.querySelectorAll('.table').forEach(tb => tb.style.transform='scale(1)');
+      table.style.transform='scale(1.12)';
+    });
+
+    floor.appendChild(table);
+  });
+}
+
+buildFloor();
+
+function showConfirmation(){
+  const tableDiv = [...document.querySelectorAll('.table')].find(t => t.dataset.id == selectedTable);
+  const selectedSeats = tableDiv ? [...tableDiv.querySelectorAll('.seat.selected')].map(s => s.dataset.seatNumber) : [];
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const studentClass = document.getElementById('classSelect').value;
+  const dietary = document.getElementById('dietary').value.trim();
+  const music = document.getElementById('music').value.trim();
+
+  const html = `
+    <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+    <p><strong>Class:</strong> ${studentClass}</p>
+    <p><strong>Table Selected:</strong> ${selectedTable ?? '—'}</p>
+    <p><strong>Seats Selected:</strong> ${selectedSeats.length ? selectedSeats.join(', ') : '—'}</p>
+    <p><strong>Dietary Requirements:</strong> ${dietary || 'None'}</p>
+    <p><strong>Music Choices:</strong> ${music || 'None'}</p>
+    <p><strong>Note:</strong> Once you submit, selected seats will be permanently booked.</p>
+  `;
+  document.getElementById('confirmation').innerHTML = html;
+}
+
+window.showConfirmation = showConfirmation;
+
+document.getElementById('mdForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting… ⏳';
+
+  try {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const studentClass = document.getElementById('classSelect').value;
+    const dietary = document.getElementById('dietary').value.trim();
+    const music = document.getElementById('music').value.trim();
+    const tableDiv = [...document.querySelectorAll('.table')].find(t => t.dataset.id == selectedTable);
+    const seatsSelected = tableDiv ? [...tableDiv.querySelectorAll('.seat.selected')].map(s => s.dataset.seatNumber) : [];
+    const fileInput = document.getElementById('paymentProof');
+    let fileBase64='', fileName='', fileType='';
+    if(fileInput.files.length>0){
+      const file=fileInput.files[0];
+      fileName=file.name;
+      fileType=file.type;
+      fileBase64 = await new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(reader.result.split(',')[1]);
+        reader.onerror=e=>reject(e);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const payload = { firstName, lastName, class: studentClass, table: selectedTable, seats: seatsSelected.join(', '), dietary, music, fileName, fileBase64, fileType };
+    document.getElementById('payloadInput').value = JSON.stringify(payload);
+    e.target.submit();
+    showStep(6);
+  } catch(err){
+    alert('❌ Submission failed: ' + err.message);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+  }
+});
+</script>
+
+</body>
+</html>
